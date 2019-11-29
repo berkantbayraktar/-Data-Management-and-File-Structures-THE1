@@ -499,7 +499,44 @@ public class BOOKDB implements IBOOKDB {
      */
     @Override
     public QueryResult.ResultQ5[] functionQ5(int author_id) {
-        return new QueryResult.ResultQ5[0];
+
+        String query;
+        ResultSet resultset = null;
+        ArrayList<QueryResult.ResultQ5> answer = new ArrayList<>();
+
+        query = "SELECT a.author_id, a.author_name FROM db2098796.author a WHERE NOT EXISTS (\n" +
+                "\tSELECT b2.publisher_id FROM db2098796.book b2 , db2098796.author_of o2\n" +
+                "    WHERE b2.isbn = o2.isbn AND o2.author_id = (?) AND b2.publisher_id NOT IN\n" +
+                "(SELECT b.publisher_id FROM db2098796.book b , db2098796.author_of o WHERE a.author_id = o.author_id AND b.isbn = o.isbn))\n" +
+                "ORDER BY a.author_id;";
+
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1,author_id);
+            resultset = preparedStatement.executeQuery();
+        }
+
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try{
+            while(resultset.next()){
+
+                int author_ID = resultset.getInt("author_id");
+                String author_name = resultset.getString("author_name");
+
+                QueryResult.ResultQ5 item = new QueryResult.ResultQ5(author_ID,author_name);
+                answer.add(item);
+            }
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+        QueryResult.ResultQ5 [] res = answer.toArray(new QueryResult.ResultQ5[answer.size()]);
+        return res;
+
     }
 
     /**
