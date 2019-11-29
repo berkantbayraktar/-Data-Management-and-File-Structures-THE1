@@ -3,6 +3,7 @@ package ceng.ceng351.bookdb;
 import com.mysql.cj.xdevapi.SqlStatement;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class BOOKDB implements IBOOKDB {
     /**
@@ -337,7 +338,41 @@ public class BOOKDB implements IBOOKDB {
      */
     @Override
     public QueryResult.ResultQ1[] functionQ1() {
-        return new QueryResult.ResultQ1[0];
+
+        String query;
+        ResultSet resultset = null;
+        ArrayList<QueryResult.ResultQ1> answer = new ArrayList<>();
+
+        query = "SELECT b.isbn, b.first_publish_year, b.page_count, p.publisher_name FROM book b , publisher p \n" +
+                "WHERE b.publisher_id = p.publisher_id AND \n" +
+                "\tb.page_count >= ALL(SELECT b2.page_count FROM db2098796.book b2)";
+
+        try{
+            resultset = statement.executeQuery(query);
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+
+        try{
+            while(resultset.next()){
+                String isbn = resultset.getString("isbn");
+                String first_publish_year = resultset.getString("first_publish_year");
+                int page_count = resultset.getInt("page_count");
+                String publisher_name = resultset.getString("publisher_name");
+
+                QueryResult.ResultQ1 item = new QueryResult.ResultQ1(isbn,first_publish_year,page_count,publisher_name);
+                answer.add(item);
+            }
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+
+        QueryResult.ResultQ1 [] res = answer.toArray(new QueryResult.ResultQ1[answer.size()]);
+        return res;
     }
 
     /**
