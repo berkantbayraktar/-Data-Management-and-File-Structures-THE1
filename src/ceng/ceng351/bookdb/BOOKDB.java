@@ -450,7 +450,44 @@ public class BOOKDB implements IBOOKDB {
      */
     @Override
     public QueryResult.ResultQ4[] functionQ4() {
-        return new QueryResult.ResultQ4[0];
+
+        String query;
+        ResultSet resultset = null;
+        ArrayList<QueryResult.ResultQ4> answer = new ArrayList<>();
+
+        query = "SELECT DISTINCt b2.publisher_id, b2.category FROM db2098796.book b2\n" +
+                "WHERE b2.publisher_id IN \n" +
+                "(SELECT b.publisher_id FROM db2098796.book b , db2098796.publisher p\n" +
+                "WHERE p.publisher_id = b.publisher_id AND p.publisher_name LIKE '% % %'\n" +
+                "GROUP BY b.publisher_id \n" +
+                "HAVING COUNT(*) > 2 AND AVG(b.rating) >3)\n" +
+                "ORDER BY b2.publisher_id , b2.category;";
+
+        try{
+            resultset = statement.executeQuery(query);
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+
+        try{
+            while(resultset.next()){
+                int publisher_id = resultset.getInt("publisher_id");
+                String category = resultset.getString("category");
+
+                QueryResult.ResultQ4 item = new QueryResult.ResultQ4(publisher_id,category);
+                answer.add(item);
+            }
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+
+        QueryResult.ResultQ4 [] res = answer.toArray(new QueryResult.ResultQ4[answer.size()]);
+        return res;
+
     }
 
     /**
