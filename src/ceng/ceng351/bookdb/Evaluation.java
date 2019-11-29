@@ -22,10 +22,10 @@ import java.util.*;
 
 public class Evaluation {
 
-    private static String user = "1234567"; // TODO: Your userName
-    private static String password = "password"; //  TODO: Your password
+    private static String user = "2098796"; // TODO: Your userName
+    private static String password = "2616558b"; //  TODO: Your password
     private static String host = "144.122.71.65"; // host name
-    private static String database = "db1234567"; // TODO: Your database name
+    private static String database = "db2098796"; // TODO: Your database name
     private static int port = 8084; // port
 
     private static Connection connection = null;
