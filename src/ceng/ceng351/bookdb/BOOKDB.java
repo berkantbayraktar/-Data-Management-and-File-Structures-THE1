@@ -343,9 +343,9 @@ public class BOOKDB implements IBOOKDB {
         ResultSet resultset = null;
         ArrayList<QueryResult.ResultQ1> answer = new ArrayList<>();
 
-        query = "SELECT b.isbn, b.first_publish_year, b.page_count, p.publisher_name FROM db2098796.book b , db2098796.publisher p \n" +
+        query = "SELECT b.isbn, b.first_publish_year, b.page_count, p.publisher_name FROM book b , publisher p \n" +
                 "WHERE b.publisher_id = p.publisher_id AND \n" +
-                "\t b.page_count >= ALL(SELECT b2.page_count FROM db2098796.book b2) \n" +
+                "\t b.page_count >= ALL(SELECT b2.page_count FROM book b2) \n" +
                 "order by b.isbn;";
 
         try{
@@ -455,9 +455,9 @@ public class BOOKDB implements IBOOKDB {
         ResultSet resultset = null;
         ArrayList<QueryResult.ResultQ4> answer = new ArrayList<>();
 
-        query = "SELECT DISTINCt b2.publisher_id, b2.category FROM db2098796.book b2\n" +
+        query = "SELECT DISTINCt b2.publisher_id, b2.category FROM book b2\n" +
                 "WHERE b2.publisher_id IN \n" +
-                "(SELECT b.publisher_id FROM db2098796.book b , db2098796.publisher p\n" +
+                "(SELECT b.publisher_id FROM book b , publisher p\n" +
                 "WHERE p.publisher_id = b.publisher_id AND p.publisher_name LIKE '% % %'\n" +
                 "GROUP BY b.publisher_id \n" +
                 "HAVING COUNT(*) > 2 AND AVG(b.rating) >3)\n" +
@@ -504,10 +504,10 @@ public class BOOKDB implements IBOOKDB {
         ResultSet resultset = null;
         ArrayList<QueryResult.ResultQ5> answer = new ArrayList<>();
 
-        query = "SELECT a.author_id, a.author_name FROM db2098796.author a WHERE NOT EXISTS (\n" +
-                "\tSELECT b2.publisher_id FROM db2098796.book b2 , db2098796.author_of o2\n" +
+        query = "SELECT a.author_id, a.author_name FROM author a WHERE NOT EXISTS (\n" +
+                "\tSELECT b2.publisher_id FROM book b2 , author_of o2\n" +
                 "    WHERE b2.isbn = o2.isbn AND o2.author_id = (?) AND b2.publisher_id NOT IN\n" +
-                "(SELECT b.publisher_id FROM db2098796.book b , db2098796.author_of o WHERE a.author_id = o.author_id AND b.isbn = o.isbn))\n" +
+                "(SELECT b.publisher_id FROM book b , author_of o WHERE a.author_id = o.author_id AND b.isbn = o.isbn))\n" +
                 "ORDER BY a.author_id;";
 
         try{
@@ -562,7 +562,44 @@ public class BOOKDB implements IBOOKDB {
      */
     @Override
     public QueryResult.ResultQ7[] functionQ7(double rating) {
-        return new QueryResult.ResultQ7[0];
+
+        String query;
+        ResultSet resultset = null;
+        ArrayList<QueryResult.ResultQ7> answer = new ArrayList<>();
+
+        query = "SELECT p.publisher_id, p.publisher_name FROM book b, publisher p\n" +
+                "WHERE p.publisher_id = b.publisher_id AND b.category = 'Roman'\n" +
+                "GROUP BY p.publisher_id\n" +
+                "HAVING COUNT(*) >1 AND AVG(b.rating) > (?) \n" +
+                "ORDER BY p.publisher_id;";
+
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setDouble(1,rating);
+            resultset = preparedStatement.executeQuery();
+        }
+
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try{
+            while(resultset.next()){
+
+                int publisher_id = resultset.getInt("publisher_id");
+                String publisher_name = resultset.getString("publisher_name");
+
+                QueryResult.ResultQ7 item = new QueryResult.ResultQ7(publisher_id,publisher_name);
+                answer.add(item);
+            }
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+        QueryResult.ResultQ7 [] res = answer.toArray(new QueryResult.ResultQ7[answer.size()]);
+        return res;
+
     }
 
     /**
