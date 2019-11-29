@@ -343,9 +343,10 @@ public class BOOKDB implements IBOOKDB {
         ResultSet resultset = null;
         ArrayList<QueryResult.ResultQ1> answer = new ArrayList<>();
 
-        query = "SELECT b.isbn, b.first_publish_year, b.page_count, p.publisher_name FROM book b , publisher p \n" +
+        query = "SELECT b.isbn, b.first_publish_year, b.page_count, p.publisher_name FROM db2098796.book b , db2098796.publisher p \n" +
                 "WHERE b.publisher_id = p.publisher_id AND \n" +
-                "\tb.page_count >= ALL(SELECT b2.page_count FROM db2098796.book b2)";
+                "\t b.page_count >= ALL(SELECT b2.page_count FROM db2098796.book b2) \n" +
+                "order by b.isbn;";
 
         try{
             resultset = statement.executeQuery(query);
@@ -398,7 +399,44 @@ public class BOOKDB implements IBOOKDB {
      */
     @Override
     public QueryResult.ResultQ3[] functionQ3(String author_name) {
-        return new QueryResult.ResultQ3[0];
+
+        String query;
+        ResultSet resultset = null;
+        ArrayList<QueryResult.ResultQ3> answer = new ArrayList<>();
+
+        query = "SELECT b.book_name, b.category, b.first_publish_year FROM book b, author a , author_of o \n" +
+                "WHERE o.author_id = a.author_id AND a.author_name = (?) AND b.isbn = o.isbn AND \n" +
+                "\tb.first_publish_year <= ALL (SELECT b2.first_publish_year FROM book b2, author a2, author_of o2\n" +
+                "                                WHERE o2.author_id = a2.author_id AND a2.author_name = (?) AND b2.isbn = o2.isbn)\n" +
+                "ORDER BY b.book_name, b.category, b.first_publish_year;";
+
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1,author_name);
+            preparedStatement.setString(2,author_name);
+            resultset = preparedStatement.executeQuery();
+        }
+
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try{
+            while(resultset.next()){
+                String book_name = resultset.getString("book_name");
+                String category = resultset.getString("category");
+                String first_publish_year = resultset.getString("first_publish_year");
+
+                QueryResult.ResultQ3 item = new QueryResult.ResultQ3(book_name,category,first_publish_year);
+                answer.add(item);
+            }
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+        QueryResult.ResultQ3 [] res = answer.toArray(new QueryResult.ResultQ3[answer.size()]);
+        return res;
     }
 
     /**
