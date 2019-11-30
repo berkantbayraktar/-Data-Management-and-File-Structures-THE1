@@ -387,7 +387,51 @@ public class BOOKDB implements IBOOKDB {
      */
     @Override
     public QueryResult.ResultQ2[] functionQ2(int author_id1, int author_id2) {
-        return new QueryResult.ResultQ2[0];
+
+        String query;
+        ResultSet resultset = null;
+        ArrayList<QueryResult.ResultQ2> answer = new ArrayList<>();
+
+        query = "SELECT b.publisher_id, AVG(b.page_count) as average_page_count FROM db2098796.book b\n" +
+                "GROUP BY b.publisher_id\n" +
+                "HAVING b.publisher_id IN ( \n" +
+                "\tSELECT b2.publisher_id\n" +
+                "\tFROM db2098796.book b2\n" +
+                "    WHERE b2.isbn IN (\n" +
+                "\t\tSELECT o.isbn\n" +
+                "        FROM db2098796.author_of o\n" +
+                "        WHERE o.author_id = (?) AND o.isbn IN \n" +
+                "\t\t\t(SELECT o2.isbn\n" +
+                "\t\t\tFROM db2098796.author_of o2\n" +
+                "\t\t\tWHERE o2.author_id = (?))))\n" +
+                "order by b.publisher_id;";
+
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1,author_id1);
+            preparedStatement.setInt(2,author_id2);
+            resultset = preparedStatement.executeQuery();
+        }
+
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try{
+            while(resultset.next()){
+
+                int publisher_id = resultset.getInt("publisher_id");
+                double average_page_count = resultset.getDouble("average_page_count");
+                QueryResult.ResultQ2 item = new QueryResult.ResultQ2(publisher_id,average_page_count);
+                answer.add(item);
+            }
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+        QueryResult.ResultQ2 [] res = answer.toArray(new QueryResult.ResultQ2[answer.size()]);
+        return res;
     }
 
     /**
