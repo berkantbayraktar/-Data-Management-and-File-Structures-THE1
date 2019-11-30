@@ -716,7 +716,49 @@ public class BOOKDB implements IBOOKDB {
      */
     @Override
     public double functionQ9(String keyword) {
-        return 0;
+
+        String sql;
+        String query;
+        ResultSet resultset = null;
+        double sum_rating  = 0;
+        keyword = "%" + keyword + "%";
+
+        sql = "UPDATE book b\n" +
+                "SET b.rating = b.rating +1\n" +
+                "WHERE b.book_name LIKE (?) AND b.rating <= 4";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1,keyword);
+            preparedStatement.executeUpdate();
+
+            System.out.println("my statement : " + sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        query = "SELECT SUM(b.rating) as sum_rating\n" +
+                "FROM db2098796.book b";
+
+        try{
+            resultset = statement.executeQuery(query);
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+
+        try{
+            resultset.next();
+            sum_rating = resultset.getDouble("sum_rating");
+
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+        return sum_rating;
+
     }
 
     /**
@@ -726,6 +768,39 @@ public class BOOKDB implements IBOOKDB {
      */
     @Override
     public int function10() {
-        return 0;
+        String sql;
+        String query;
+        ResultSet resultset = null;
+        int count_rows = 0;
+
+        sql = "DELETE FROM db2098796.publisher p\n" +
+                "WHERE p.publisher_id NOT IN (SELECT b.publisher_id FROM db2098796.book b)";
+
+        try{
+            statement.executeUpdate(sql);
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+        query = "SELECT COUNT(*) as count_rows FROM db2098796.publisher p";
+
+        try{
+            resultset = statement.executeQuery(query);
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+        try{
+            resultset.next();
+            count_rows = resultset.getInt("count_rows");
+
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+        return count_rows;
     }
 }
