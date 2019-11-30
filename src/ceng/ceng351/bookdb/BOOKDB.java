@@ -455,7 +455,7 @@ public class BOOKDB implements IBOOKDB {
         ResultSet resultset = null;
         ArrayList<QueryResult.ResultQ4> answer = new ArrayList<>();
 
-        query = "SELECT DISTINCt b2.publisher_id, b2.category FROM book b2\n" +
+        query = "SELECT DISTINCT b2.publisher_id, b2.category FROM book b2\n" +
                 "WHERE b2.publisher_id IN \n" +
                 "(SELECT b.publisher_id FROM book b , publisher p\n" +
                 "WHERE p.publisher_id = b.publisher_id AND p.publisher_name LIKE '% % %'\n" +
@@ -549,7 +549,48 @@ public class BOOKDB implements IBOOKDB {
      */
     @Override
     public QueryResult.ResultQ6[] functionQ6() {
-        return new QueryResult.ResultQ6[0];
+
+        String query;
+        ResultSet resultset = null;
+        ArrayList<QueryResult.ResultQ6> answer = new ArrayList<>();
+
+        query = "SELECT aut.author_id,bo.isbn FROM db2098796.author aut, db2098796.book bo , db2098796.author_of autof\n" +
+                "WHERE aut.author_id = autof.author_id AND bo.isbn = autof.isbn AND NOT EXISTS (\n" +
+                "SELECT bo2.publisher_id FROM db2098796.author aut2, db2098796.book bo2 , db2098796.author_of autof2\n" +
+                "WHERE aut.author_id = aut2.author_id AND aut2.author_id = autof2.author_id AND bo2.isbn = autof2.isbn AND bo2.publisher_id NOT IN\n" +
+                "\n" +
+                "( SELECT DISTINCT b.publisher_id FROM db2098796.book b, db2098796.book b2, db2098796.author_of o , db2098796.author_of o2\n" +
+                " WHERE o.isbn = b.isbn AND o2.isbn = b2.isbn AND b.publisher_id = b2.publisher_id AND o2.author_id = o.author_id \n" +
+                " AND b.publisher_id  NOT IN     \n" +
+                " (SELECT DISTINCT b3.publisher_id  FROM db2098796.book b3, db2098796.book b4, db2098796.author_of o3 , db2098796.author_of o4  \n" +
+                " WHERE o3.isbn = b3.isbn AND o4.isbn = b4.isbn AND b3.publisher_id = b4.publisher_id AND o4.author_id <> o3.author_id)) )\n" +
+                "ORDER BY aut.author_id, bo.isbn;\n";
+
+        try{
+            resultset = statement.executeQuery(query);
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+
+        try{
+            while(resultset.next()){
+                int author_id = resultset.getInt("author_id");
+                String isbn = resultset.getString("isbn");
+                QueryResult.ResultQ6 item = new QueryResult.ResultQ6(author_id,isbn);
+                answer.add(item);
+            }
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+
+        QueryResult.ResultQ6 [] res = answer.toArray(new QueryResult.ResultQ6[answer.size()]);
+        return res;
+
+
     }
 
     /**
