@@ -130,7 +130,7 @@ public class BOOKDB implements IBOOKDB {
 
 
 
-        System.out.println("completed.");
+        //System.out.println("completed.");
         return 5;
     }
 
@@ -206,7 +206,7 @@ public class BOOKDB implements IBOOKDB {
                 preparedStatement.setString(2,author.getAuthor_name());
                 preparedStatement.executeUpdate();
                 count++;
-                System.out.println("my statement : " + sql);
+                //System.out.println("my statement : " + sql);
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -215,7 +215,7 @@ public class BOOKDB implements IBOOKDB {
 
         }
 
-        System.out.println("Count : " + count);
+        //System.out.println("Count : " + count);
         return count;
     }
 
@@ -246,7 +246,7 @@ public class BOOKDB implements IBOOKDB {
                 preparedStatement.setDouble(7,book.getRating());
                 preparedStatement.executeUpdate();
                 count++;
-                System.out.println("my statement : " + sql);
+                //System.out.println("my statement : " + sql);
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -255,7 +255,7 @@ public class BOOKDB implements IBOOKDB {
 
         }
 
-        System.out.println("Count : " + count);
+        //System.out.println("Count : " + count);
         return count;
     }
 
@@ -281,7 +281,7 @@ public class BOOKDB implements IBOOKDB {
                 preparedStatement.setString(2,publisher.getPublisher_name());
                 preparedStatement.executeUpdate();
                 count++;
-                System.out.println("my statement : " + sql);
+                //System.out.println("my statement : " + sql);
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -290,7 +290,7 @@ public class BOOKDB implements IBOOKDB {
 
         }
 
-        System.out.println("Count : " + count);
+        //System.out.println("Count : " + count);
         return count;
 
     }
@@ -317,7 +317,7 @@ public class BOOKDB implements IBOOKDB {
                 preparedStatement.setInt(2,author_of.getAuthor_id());
                 preparedStatement.executeUpdate();
                 count++;
-                System.out.println("my statement : " + sql);
+                //System.out.println("my statement : " + sql);
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -326,7 +326,7 @@ public class BOOKDB implements IBOOKDB {
 
         }
 
-        System.out.println("Count : " + count);
+        //System.out.println("Count : " + count);
         return count;
     }
 
@@ -782,7 +782,7 @@ public class BOOKDB implements IBOOKDB {
             preparedStatement.setString(1,keyword);
             preparedStatement.executeUpdate();
 
-            System.out.println("my statement : " + sql);
+            //System.out.println("my statement : " + sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
