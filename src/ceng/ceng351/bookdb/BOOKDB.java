@@ -701,7 +701,57 @@ public class BOOKDB implements IBOOKDB {
      */
     @Override
     public QueryResult.ResultQ8[] functionQ8() {
-        return new QueryResult.ResultQ8[0];
+
+        String sql;
+        String query;
+        ResultSet resultset = null;
+        ArrayList<QueryResult.ResultQ8> answer = new ArrayList<>();
+
+        sql = "INSERT INTO db2098796.phw1\n" +
+                "SELECT DISTINCT b.isbn, b.book_name, b.rating\n" +
+                "FROM db2098796.book b, db2098796.book b2\n" +
+                "WHERE b.isbn <> b2.isbn AND b.book_name = b2.book_name AND b.isbn NOT IN \n" +
+                "\t(SELECT DISTINCT  b3.isbn\n" +
+                "\tFROM db2098796.book b3, db2098796.book b4\n" +
+                "\tWHERE b3.isbn <> b4.isbn AND b3.book_name = b4.book_name AND b3.rating > b4.rating\n" +
+                "\t)";
+
+        try{
+            statement.executeUpdate(sql);
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+        query = "SELECT p.isbn, p.book_name, p.rating\n" +
+                "FROM db2098796.phw1 p\n" +
+                "ORDER BY p.isbn;";
+
+        try{
+            resultset = statement.executeQuery(query);
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+        try{
+            while(resultset.next()){
+                String isbn = resultset.getString("isbn");
+                String book_name = resultset.getString("book_name");
+                double rating = resultset.getDouble("rating");
+
+                ;
+
+                QueryResult.ResultQ8 item = new QueryResult.ResultQ8(isbn,book_name,rating);
+                answer.add(item);
+            }
+        }
+        catch (SQLException e ){
+            e.printStackTrace();
+        }
+
+        QueryResult.ResultQ8 [] res = answer.toArray(new QueryResult.ResultQ8[answer.size()]);
+        return res;
     }
 
     /**
