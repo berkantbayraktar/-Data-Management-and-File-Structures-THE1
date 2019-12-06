@@ -114,7 +114,7 @@ public class Evaluation {
         /**
          * ********************************************************
          */
-        // TODO While running on your local machine, change musicdbDirectory accordingly
+        // TODO While running on your local machine, change bookdbDirectory accordingly
         String bookdbDirectory = "src" + System.getProperty("file.separator")
                 + "ceng" + System.getProperty("file.separator")
                 + "ceng351" + System.getProperty("file.separator")
@@ -130,7 +130,7 @@ public class Evaluation {
         //Connect to the database
         connect();
 
-        // Create MUSICDB object
+        // Create BOOKDB object
         BOOKDB bookDB = null;
 
         String dumpAuthor = "dump_author.txt";
@@ -183,7 +183,7 @@ public class Evaluation {
 
             // Drop tables
             try {
-                numberofTablesDropped = bookDB.dropTables(); //103051
+                numberofTablesDropped = bookDB.dropTables(); 
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -218,7 +218,7 @@ public class Evaluation {
 
             // Create Tables
             try {
-                numberofTablesCreated = bookDB.createTables(); //103051
+                numberofTablesCreated = bookDB.createTables(); 
 
                 // Check if tables are created
                 printLine("Created " + numberofTablesCreated + " tables.", bufferedWriter);
@@ -256,7 +256,7 @@ public class Evaluation {
                     + System.getProperty("file.separator") + "data" + System.getProperty("file.separator")
                     + dumpAuthor);
 
-            numberofInsertions = bookDB.insertAuthor(authors);//103051
+            numberofInsertions = bookDB.insertAuthor(authors);
             printLine(numberofInsertions + " authors are inserted.", bufferedWriter);
             addDivider(bufferedWriter);
             /**
@@ -286,7 +286,7 @@ public class Evaluation {
             Publisher[] publishers = FileOperations.readPublisherFile(bookdbDirectory + System.getProperty("file.separator")
                     + "data" + System.getProperty("file.separator") + dumpPublisher);
 
-            numberofInsertions = bookDB.insertPublisher(publishers);//103051
+            numberofInsertions = bookDB.insertPublisher(publishers);
             printLine(numberofInsertions + " publishers are inserted.", bufferedWriter);
             addDivider(bufferedWriter);
             /**
@@ -317,7 +317,7 @@ public class Evaluation {
                     + System.getProperty("file.separator") + "data" + System.getProperty("file.separator")
                     + dumpBook);
 
-            numberofInsertions = bookDB.insertBook(books);//103051
+            numberofInsertions = bookDB.insertBook(books);
             printLine(numberofInsertions + " books are inserted.", bufferedWriter);
             addDivider(bufferedWriter);
             /**
@@ -348,7 +348,7 @@ public class Evaluation {
                     + System.getProperty("file.separator") + "data" + System.getProperty("file.separator")
                     + dumpAuthor_of);
 
-            numberofInsertions = bookDB.insertAuthor_of(author_ofs);//103051
+            numberofInsertions = bookDB.insertAuthor_of(author_ofs);
             printLine(numberofInsertions + " Author_ofs are inserted.", bufferedWriter);
             addDivider(bufferedWriter);
             /**

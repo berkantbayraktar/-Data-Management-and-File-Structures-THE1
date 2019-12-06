@@ -1,7 +1,4 @@
 package ceng.ceng351.bookdb;
-
-import com.mysql.cj.xdevapi.SqlStatement;
-
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -40,9 +37,6 @@ public class BOOKDB implements IBOOKDB {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        dropTables();
-
     }
 
     /**
